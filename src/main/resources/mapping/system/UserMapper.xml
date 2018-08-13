@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kokoharry.site.system.dao.UserMapper" >
+  <resultMap id="BaseResultMap" type="com.kokoharry.site.system.bean.User" >
+      <id column="id" property="id" javaType="java.lang.Long" />
+      <result column="user_name" property="userName" javaType="java.lang.String" />
+      <result column="password" property="password" javaType="java.lang.String" />
+      <result column="user_level" property="userLevel" javaType="java.lang.Integer" />
+      <result column="telphone" property="telphone" javaType="java.lang.String" />
+      <result column="role_code" property="roleCode" javaType="java.lang.String" />
+      <result column="real_name" property="realName" javaType="java.lang.String" />
+      <result column="create_type" property="createType" javaType="java.lang.Integer" />
+      <result column="update_type" property="updateType" javaType="java.lang.Integer" />
+      <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    id, user_name, password,telphone, user_level, create_type, update_type, role_code, real_name,update_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+    select
+    <include refid="Base_Column_List" />
+    from USER
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectExits" parameterType="com.kokoharry.site.system.bean.User" resultType="java.lang.Integer">
+    select count(1) from USER
+    <where>
+      1 = 1
+      <if test="id != null and id > 0" >
+        AND id = #{id,jdbcType=BIGINT}
+      </if>
+      <if test="userName != null" >
+        AND user_name = #{userName,jdbcType=VARCHAR}
+      </if>
+      <if test="password != null" >
+        AND password = #{password,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </select>
+  <!-- 登录 -->
+  <select id="selectUserForLogin" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from USER
+    <where>
+        user_name = #{userName,jdbcType=VARCHAR} AND password = #{password,jdbcType=VARCHAR}
+    </where>
+  </select>
+
+    <select id="getListForPage" resultMap="BaseResultMap" resultType="java.util.List">
+        select
+          <include refid="Base_Column_List" />
+        from USER
+        limit #{firstNum},#{limitNum}
+    </select>
+
+    <select id="selectTotalCount"  resultType="java.lang.Integer">
+        select count(1)
+        from USER
+    </select>
+
+    <insert id="insert" parameterType="com.kokoharry.site.system.bean.User" useGeneratedKeys="true" keyProperty="id">
+        insert into User(user_name, real_name, password, telphone, create_type, create_time, create_user)
+        values(
+          #{userName,jdbcType=VARCHAR},
+          #{realName,jdbcType=VARCHAR},
+          #{password,jdbcType=VARCHAR},
+          #{telphone,jdbcType=VARCHAR},
+          #{createType,jdbcType=INTEGER},
+          now(),
+          #{createUser,jdbcType=BIGINT}
+        )
+    </insert>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        DELETE FROM USER
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <update id="updateByPrimaryKey" parameterType="com.kokoharry.site.system.bean.User">
+        UPDATE USER
+        <trim prefix="set" suffixOverrides=",">
+            <if test="userName!=null">user_name=#{userName},</if>
+            <if test="realName!=null">real_name=#{realName},</if>
+            <if test="telphone!=null">telphone=#{telphone},</if>
+            <if test="updateType!=null">update_type=#{updateType},</if>
+            <if test="updateUser!=null">update_user=#{updateUser},</if>
+        </trim>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+
+</mapper>

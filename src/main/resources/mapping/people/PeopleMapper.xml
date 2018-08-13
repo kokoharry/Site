@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kokoharry.site.people.dao.PeopleMapper" >
+  <resultMap id="BaseResultMap" type="com.kokoharry.site.people.bean.People" >
+      <result column="INSURANCE_CARD_NO" property="insuranceCardNo" javaType="java.lang.String" />
+      <result column="NAME" property="name" javaType="java.lang.String" />
+      <result column="GENDER_CODE" property="genderCode" javaType="java.lang.String" />
+      <result column="BIRTHDAY" property="birthday" javaType="java.lang.String" />
+      <result column="NATION_RAW" property="nationRaw" javaType="java.lang.String" />
+      <result column="ID_CARD_NO" property="idCardNo" javaType="java.lang.String" />
+      <result column="MARITAL_STATUS_RAW" property="maritalStatusRaw" javaType="java.lang.String" />
+      <result column="TELEPHONE" property="telephone" javaType="java.lang.String" />
+      <result column="ADDRESS" property="address" javaType="java.lang.String" />
+      <result column="CONTACTS" property="contacts" javaType="java.lang.String" />
+      <result column="RELATIONSHIP_RAW" property="relationshipRaw" javaType="java.lang.String" />
+      <result column="UNIT_NAME" property="unitName" javaType="java.lang.String" />
+      <result column="OCCUPATION_RAW" property="occupationRaw" javaType="java.lang.String" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    INSURANCE_CARD_NO, NAME, GENDER_CODE,BIRTHDAY, NATION_RAW, ID_CARD_NO, MARITAL_STATUS_RAW, TELEPHONE, ADDRESS,CONTACTS,RELATIONSHIP_RAW,UNIT_NAME,OCCUPATION_RAW
+  </sql>
+
+    <select id="getListForPage" resultMap="BaseResultMap" >
+        select
+          <include refid="Base_Column_List" />
+        from people
+        <where>
+            1=1
+            <if test="record != null">
+                <if test="record.insuranceCardNo != null and record.insuranceCardNo != '' ">
+                  and INSURANCE_CARD_NO LIKE concat(#{record.insuranceCardNo},'%')
+                </if>
+                <if test="record.name != null and record.name != '' ">
+                  and NAME = #{record.name}
+                </if>
+                <if test="record.genderCode != null and record.genderCode != '' ">
+                    and GENDER_CODE = #{record.genderCode}
+                </if>
+                <if test="record.idCardNo != null and record.idCardNo != '' ">
+                    and ID_CARD_NO = LIKE concat(#{record.idCardNo},'%')
+                </if>
+                <if test="record.telephone != null and record.telephone != '' ">
+                    and TELEPHONE = LIKE concat(#{record.telephone},'%')
+                </if>
+                <if test="record.unitName != null and record.unitName != '' ">
+                    and UNIT_NAME = LIKE concat('%',#{record.unitName},'%')
+                </if>
+            </if>
+        </where>
+          limit #{firstNum},#{limitNum}
+    </select>
+
+    <select id="getTotalCountForPage"  resultType="java.lang.Integer" >
+        select count(1)
+        from people
+        <where>
+            1=1
+            <if test="record != null">
+                <if test="record.insuranceCardNo != null and record.insuranceCardNo != '' ">
+                    and INSURANCE_CARD_NO LIKE concat(#{record.insuranceCardNo},'%')
+                </if>
+                <if test="record.name != null and record.name != '' ">
+                    and NAME = #{record.name}
+                </if>
+                <if test="record.genderCode != null and record.genderCode != '' ">
+                    and GENDER_CODE = #{record.genderCode}
+                </if>
+                <if test="record.idCardNo != null and record.idCardNo != '' ">
+                    and ID_CARD_NO = LIKE concat(#{record.idCardNo},'%')
+                </if>
+                <if test="record.telephone != null and record.telephone != '' ">
+                    and TELEPHONE = LIKE concat(#{record.telephone},'%')
+                </if>
+                <if test="record.unitName != null and record.unitName != '' ">
+                    and UNIT_NAME = LIKE concat('%',#{record.unitName},'%')
+                </if>
+            </if>
+        </where>
+    </select>
+
+</mapper>

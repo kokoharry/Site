@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kokoharry.site.job.dao.JobMapper" >
+  <resultMap id="BaseResultMap" type="com.kokoharry.site.job.bean.Job" >
+      <result column="JOB_NAME" property="jobName" javaType="java.lang.String" />
+      <result column="JOB_GROUP" property="jobGroup" javaType="java.lang.String" />
+      <result column="JOB_CLASS_NAME" property="jobClassName" javaType="java.lang.String" />
+      <result column="JOB_DATA" property="jobData" javaType="java.lang.String" />
+      <result column="CRON_EXPRESSION" property="cron" javaType="java.lang.String" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    JOB_NAME, JOB_GROUP, JOB_CLASS_NAME,JOB_DATA
+  </sql>
+
+    <select id="getListForPage" resultMap="BaseResultMap" >
+        select
+          t.JOB_NAME, t.JOB_GROUP, t.JOB_CLASS_NAME,t.JOB_DATA,tc.CRON_EXPRESSION
+        from qrtz_job_details t
+        INNER JOIN qrtz_triggers tt on tt.JOB_NAME = t.JOB_NAME
+        INNER JOIN qrtz_cron_triggers tc on tc.TRIGGER_NAME = tt.TRIGGER_NAME
+        <where>
+            1=1
+        </where>
+          limit #{firstNum},#{limitNum}
+    </select>
+
+    <select id="getTotalCountForPage"  resultType="java.lang.Integer" >
+        select count(1)
+        from qrtz_job_details
+        <where>
+            1=1
+        </where>
+    </select>
+
+</mapper>

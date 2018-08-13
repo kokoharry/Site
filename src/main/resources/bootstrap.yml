@@ -1,0 +1,9 @@
+spring:
+  profiles:
+    active: ${service.profile:default}
+  application:
+    name: ${service.name:site}
+  cloud:
+    config:
+      enabled: ${config.server.enabled:false}
+

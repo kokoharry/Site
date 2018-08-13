@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kokoharry.site.system.dao.RoleMapper" >
+  <resultMap id="BaseResultMap" type="com.kokoharry.site.system.bean.Role" >
+      <id column="id" property="id" javaType="java.lang.Long" />
+      <result column="role_code" property="roleCode" javaType="java.lang.String" />
+      <result column="role_name" property="roleName" javaType="java.lang.String" />
+      <result column="create_type" property="createType" javaType="java.lang.Integer" />
+      <result column="update_type" property="updateType" javaType="java.lang.Integer" />
+      <result column="update_time" property="updateTime" javaType="java.lang.String" />
+      <result column="create_time" property="createTime" javaType="java.lang.String" />
+      <result column="update_user" property="updateUser" javaType="java.lang.Long" />
+      <result column="create_user" property="createUser" javaType="java.lang.Long" />
+      <collection property="roleMenuRelations" column="role_code" ofType="com.kokoharry.site.system.bean.RoleMenuRelation"  >
+          <result property="menuCode" column="menu_code" />
+          <result property="operationAuthority" column="operation_authority" />
+      </collection>
+  </resultMap>
+
+    <resultMap id="ResultMap" type="com.kokoharry.site.system.bean.Role" >
+        <id column="id" property="id" javaType="java.lang.Long" />
+        <result column="role_code" property="roleCode" javaType="java.lang.String" />
+        <result column="role_name" property="roleName" javaType="java.lang.String" />
+        <result column="create_type" property="createType" javaType="java.lang.Integer" />
+        <result column="update_type" property="updateType" javaType="java.lang.Integer" />
+        <result column="update_time" property="updateTime" javaType="java.lang.String" />
+        <result column="create_time" property="createTime" javaType="java.lang.String" />
+        <result column="update_user" property="updateUser" javaType="java.lang.Long" />
+        <result column="create_user" property="createUser" javaType="java.lang.Long" />
+    </resultMap>
+
+  <sql id="Base_Column_List" >
+    id, role_code, role_name,create_type, update_type,create_time,create_user,update_time,update_user
+  </sql>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from ROLE
+    <where>
+        id = #{id,jdbcType=VARCHAR}
+    </where>
+  </select>
+
+    <select id="selectOneByCode" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from ROLE
+        <where>
+            role_code = #{code,jdbcType=VARCHAR}
+        </where>
+    </select>
+
+    <select id="getRolePermissions" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select r.id,r.role_code,r.role_name,r.create_type,r.update_type,rmr.menu_code,rmr.operation_authority from Role r
+        LEFT JOIN role_menu_relation rmr ON r.role_code = rmr.role_code
+        <where>
+            r.role_code = #{roleCode}
+        </where>
+    </select>
+
+    <select id="getListForPage"  resultMap="BaseResultMap" resultType="java.util.List">
+        select
+        <include refid="Base_Column_List" />
+        FROM ROLE
+        limit #{firstNum},#{limitNum}
+    </select>
+
+    <select id="selectTotalCount"  resultType="java.lang.Integer">
+        select count(1)
+        from ROLE
+    </select>
+
+    <insert id="insert" parameterType="com.kokoharry.site.system.bean.Role" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into ROLE(role_code, role_name, create_type, create_time, create_user)
+        values(
+        #{roleCode,jdbcType=VARCHAR},
+        #{roleName,jdbcType=VARCHAR},
+        #{createType,jdbcType=INTEGER},
+        now(),
+        #{createUser,jdbcType=BIGINT}
+        )
+    </insert>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        DELETE FROM ROLE
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <update id="updateByPrimaryKey" parameterType="com.kokoharry.site.system.bean.Role">
+        UPDATE ROLE
+        <trim prefix="set" suffixOverrides=",">
+            <if test="roleName!=null">role_name=#{roleName},</if>
+            <if test="updateType!=null">update_type=#{updateType},</if>
+            <if test="updateUser!=null">update_user=#{updateUser},</if>
+        </trim>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+
+    <select id="getRolesByMenuCodeForRelation" parameterType="java.lang.String" resultMap="ResultMap" resultType="java.util.List">
+        SELECT
+          r.role_name as role_name,
+          r.role_code as role_code
+        FROM
+          role_menu_relation rm
+        LEFT JOIN
+          role r
+        ON
+          r.role_code = rm.role_code
+        WHERE
+          rm.menu_code= #{menuCode}
+    </select>
+
+    <select id="getOtherRolesByMenuCodeForRelation" parameterType="java.lang.String"
+            resultMap="ResultMap" resultType="java.util.List" >
+        SELECT
+            r.role_name AS role_name,
+            r.role_code AS role_code
+        FROM
+            role r
+        WHERE
+            r.role_code NOT IN (
+                SELECT
+                  role_code
+                FROM
+                  role_menu_relation rm
+                WHERE rm.menu_code = #{menuCode}
+            );
+    </select>
+
+</mapper>

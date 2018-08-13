@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kokoharry.site.system.dao.MenuMapper" >
+  <resultMap id="BaseResultMap" type="com.kokoharry.site.system.bean.Menu" >
+      <id column="id" property="id" javaType="java.lang.Long" />
+      <result column="menu_code" property="menuCode" javaType="java.lang.String" />
+      <result column="menu_name" property="menuName" javaType="java.lang.String" />
+      <result column="menu_href" property="menuHref" javaType="java.lang.String" />
+      <result column="menu_parent_code" property="menuParentCode" javaType="java.lang.String" />
+      <result column="menu_icon" property="menuIcon" javaType="java.lang.String" />
+      <result column="create_type" property="createType" javaType="java.lang.Integer" />
+      <result column="update_type" property="updateType" javaType="java.lang.Integer" />
+      <result column="update_time" property="updateTime" javaType="java.lang.String" />
+      <result column="create_time" property="createTime" javaType="java.lang.String" />
+      <result column="update_user" property="updateUser" javaType="java.lang.Long" />
+      <result column="create_user" property="createUser" javaType="java.lang.Long" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    id, menu_code, menu_name,menu_href,menu_parent_code,menu_icon,create_type, update_type
+  </sql>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from MENU
+    <where>
+        id = #{id,jdbcType=VARCHAR}
+    </where>
+  </select>
+
+    <select id="getMenusByRoleCode" resultType="java.util.List" resultMap="BaseResultMap">
+        SELECT
+        m.id, m.menu_code, m.menu_name, m.menu_href, m.menu_parent_code, m.menu_icon, m.create_type, m.update_type
+        FROM MENU m
+        LEFT JOIN ROLE_MENU_RELATION  r ON m.MENU_CODE = r.MENU_CODE
+        <where>
+            r.ROLE_CODE = #{roleCode,jdbcType=VARCHAR}
+        </where>
+    </select>
+
+    <select id="getListForPage"  resultMap="BaseResultMap" resultType="java.util.List">
+        select
+        <include refid="Base_Column_List" />
+        FROM MENU
+        limit #{firstNum},#{limitNum}
+    </select>
+
+    <select id="selectTotalCount"  resultType="java.lang.Integer">
+        select count(1)
+        from MENU
+    </select>
+
+    <insert id="insert" parameterType="com.kokoharry.site.system.bean.Menu" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into MENU(menu_code, menu_name, menu_href, menu_parent_code,
+        menu_icon,create_type,create_time,create_user)
+        values(
+        #{menuCode,jdbcType=VARCHAR},
+        #{menuName,jdbcType=VARCHAR},
+        #{menuHref,jdbcType=VARCHAR},
+        #{menuParentCode,jdbcType=VARCHAR},
+        #{menuIcon,jdbcType=VARCHAR},
+        #{createType,jdbcType=INTEGER},
+        now(),
+        #{createUser,jdbcType=BIGINT}
+        )
+    </insert>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        DELETE FROM MENU
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+</mapper>

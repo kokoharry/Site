@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kokoharry.site.system.dao.RoleMenuRelationMapper" >
+
+  <sql id="Base_Column_List" >
+    id, role_code, menu_code,create_type, update_type,create_time,create_user,update_time,update_user
+  </sql>
+
+    <insert id="insert" parameterType="com.kokoharry.site.system.bean.RoleMenuRelation" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into ROLE_MENU_RELATION(role_code, menu_code,operation_authority, create_type, create_time,
+        create_user,update_user,update_time)
+        values(
+        #{roleCode,jdbcType=VARCHAR},
+        #{menuCode,jdbcType=VARCHAR},
+        #{operationAuthority,jdbcType=INTEGER},
+        #{createType,jdbcType=INTEGER},
+        now(),
+        #{createUser,jdbcType=BIGINT},
+        #{updateUser,jdbcType=BIGINT},
+        now()
+        )
+    </insert>
+
+    <delete id="deleteByMenuCode" parameterType="java.lang.String">
+        DELETE FROM ROLE_MENU_RELATION
+        <where>
+            menu_code = #{menuCode}
+        </where>
+    </delete>
+</mapper>
